@@ -4,6 +4,8 @@ A numerical simulation project using the **1D heat equation** to study how therm
 
 Developed as part of **MATH 440: Mathematical Modeling** at Christopher Newport University.
 
+![Heat spreading comparison](figures/figure_02.png)
+
 ## Mathematical Model
 
 The simulation solves
@@ -28,6 +30,8 @@ The notebook explores two related questions:
 - How does changing thermal diffusivity affect peak temperature, heat spreading, and the temperature experienced deeper inside a spacecraft wall?
 
 The reentry-inspired model compares an illustrative **low-diffusivity material** with a **higher-diffusivity, RCC-like case**. Rather than treating one material as universally better, the analysis highlights the engineering tradeoff: high diffusivity can spread a localized hot spot and reduce steep thermal gradients, while low diffusivity can slow the transport of heat toward the protected interior.
+
+![Peak and interior temperature comparison](figures/figure_03.png)
 
 ## Numerical Workflow
 
