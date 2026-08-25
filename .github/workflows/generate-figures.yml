@@ -21,11 +21,12 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install numpy matplotlib jupyter nbconvert
+        run: pip install numpy matplotlib nbconvert ipykernel
 
       - name: Execute a temporary notebook and save figures
         shell: bash
         run: |
+          rm -rf figures
           mkdir -p figures
           python - <<'PY'
           import json
@@ -71,5 +72,6 @@ jobs:
           git add figures
           if ! git diff --cached --quiet; then
             git commit -m 'Add generated heat transfer figures'
+            git pull --rebase origin main
             git push
           fi
