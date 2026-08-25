@@ -1,0 +1,75 @@
+name: Generate portfolio figures
+
+on:
+  push:
+    paths:
+      - '.github/workflows/generate-figures.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install numpy matplotlib jupyter nbconvert
+
+      - name: Execute a temporary notebook and save figures
+        shell: bash
+        run: |
+          mkdir -p figures
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = Path('heat_transfer_modeling.ipynb')
+          temporary = Path('_figure_generation.ipynb')
+          nb = json.loads(source.read_text(encoding='utf-8'))
+
+          setup_cell = {
+              'cell_type': 'code',
+              'execution_count': None,
+              'metadata': {},
+              'outputs': [],
+              'source': [
+                  "import matplotlib\n",
+                  "matplotlib.use('Agg')\n",
+                  "import matplotlib.pyplot as plt\n",
+                  "from pathlib import Path\n",
+                  "Path('figures').mkdir(exist_ok=True)\n",
+                  "_portfolio_figure_counter = {'n': 0}\n",
+                  "def _portfolio_show(*args, **kwargs):\n",
+                  "    _portfolio_figure_counter['n'] += 1\n",
+                  "    fig = plt.gcf()\n",
+                  "    if fig.get_axes():\n",
+                  "        fig.savefig(f\"figures/figure_{_portfolio_figure_counter['n']:02d}.png\", dpi=180, bbox_inches='tight')\n",
+                  "    plt.close('all')\n",
+                  "plt.show = _portfolio_show\n"
+              ]
+          }
+          nb['cells'].insert(0, setup_cell)
+          temporary.write_text(json.dumps(nb, indent=1) + '\n', encoding='utf-8')
+          PY
+
+          jupyter nbconvert --to notebook --execute _figure_generation.ipynb --output _executed.ipynb --ExecutePreprocessor.timeout=300
+          rm -f _figure_generation.ipynb _executed.ipynb
+
+      - name: Commit generated figures
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add figures
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add generated heat transfer figures'
+            git push
+          fi
