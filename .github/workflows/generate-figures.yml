@@ -35,6 +35,13 @@ jobs:
           temporary = Path('_figure_generation.ipynb')
           nb = json.loads(source.read_text(encoding='utf-8'))
 
+          for cell in nb.get('cells', []):
+              source_text = ''.join(cell.get('source', []))
+              if cell.get('cell_type') == 'code' and source_text.lstrip().startswith('# 🚀 Spacecraft Wall Demo:'):
+                  cell['cell_type'] = 'markdown'
+                  cell.pop('outputs', None)
+                  cell.pop('execution_count', None)
+
           setup_cell = {
               'cell_type': 'code',
               'execution_count': None,
