@@ -1,14 +1,14 @@
-# Heat Transfer Modeling in Spacecraft Materials
+# Heat Transfer Modeling
 
-A numerical simulation project using the **1D heat equation** to study how thermal diffusivity changes the way heat moves through a material. The project begins with a general heat-conduction model and then applies the same numerical framework to a reentry-inspired spacecraft thermal-protection problem.
+This project uses the one-dimensional heat equation to model how temperature changes inside a material over time. I solved the equation numerically with an explicit finite-difference method.
 
-Developed as part of **MATH 440: Mathematical Modeling** at Christopher Newport University.
+I started with a simple rod model, then used the same method for a reentry-inspired example that compares two thermal diffusivity values.
 
-![Heat spreading comparison](figures/figure_02.png)
+![Heat spreading over time](figures/figure_02.png)
 
-## Mathematical Model
+## Model
 
-The simulation solves
+The heat equation is
 
 $$
 \frac{\partial T}{\partial t}=\alpha\frac{\partial^2 T}{\partial x^2},
@@ -16,52 +16,35 @@ $$
 
 where $T(x,t)$ is temperature and $\alpha$ is thermal diffusivity.
 
-The PDE is approximated with an **explicit finite-difference method** on a one-dimensional spatial grid. The time step is selected to satisfy the explicit-scheme stability condition
+For the explicit method to remain stable, the time step must satisfy
 
 $$
-r=\frac{\alpha\Delta t}{\Delta x^2}\leq 0.5.
+\frac{\alpha\Delta t}{\Delta x^2}\leq 0.5.
 $$
 
-## What the Project Investigates
+The notebook checks this value before running the simulation.
 
-The notebook explores two related questions:
+## What I compared
 
-- How does an initial temperature distribution diffuse through a 1D material over time?
-- How does changing thermal diffusivity affect peak temperature, heat spreading, and the temperature experienced deeper inside a spacecraft wall?
+The first part of the notebook shows how an initial temperature profile spreads through a rod.
 
-The reentry-inspired model compares an illustrative **low-diffusivity material** with a **higher-diffusivity, RCC-like case**. Rather than treating one material as universally better, the analysis highlights the engineering tradeoff: high diffusivity can spread a localized hot spot and reduce steep thermal gradients, while low diffusivity can slow the transport of heat toward the protected interior.
+The second part compares a lower-diffusivity material with a higher-diffusivity case. The higher value spreads a surface hot spot more quickly, while the lower value slows the movement of heat toward the interior. This is a simplified model, but it shows why material choice involves a tradeoff rather than one value always being better.
 
-![Peak and interior temperature comparison](figures/figure_03.png)
+![Peak and interior temperatures](figures/figure_03.png)
 
-## Numerical Workflow
+## Files
 
-- Define the spatial grid, thermal diffusivity, and boundary conditions
-- Select a stable time step for the explicit finite-difference scheme
-- Step the heat equation forward in time
-- Record temperature profiles at selected times
-- Compare low- and high-diffusivity cases
-- Track peak temperature and interior/probe temperature over time
-- Interpret the results as a thermal-protection design tradeoff
+- `heat_transfer_modeling.ipynb`: the numerical model and plots
+- `figures/`: figures produced from the notebook
+- `requirements.txt`: Python packages needed to run it
 
-## Repository Contents
+## Tools
 
-- `heat_transfer_modeling.ipynb` — complete numerical model and analysis, with notebook outputs cleaned for easier review
-- `figures/` — generated visualizations of the thermal simulations
-- `requirements.txt` — Python dependencies
+Python, NumPy, Matplotlib, partial differential equations, and finite differences
 
-## Tools and Methods
-
-**Python · NumPy · Matplotlib · Partial Differential Equations · Finite Differences · Numerical Simulation**
-
-The project demonstrates PDE discretization, numerical stability analysis, boundary-condition implementation, parameter comparison, and visualization of a time-dependent physical system.
-
-## Running the Project
+## Run the notebook
 
 ```bash
 pip install -r requirements.txt
 jupyter notebook heat_transfer_modeling.ipynb
 ```
-
-## Why I Built It
-
-I enjoy using mathematics to understand why physical systems behave the way they do. This project gave me a way to connect differential equations and numerical methods with an engineering problem where material properties and design assumptions produce directly observable changes in system behavior. That model-to-simulation-to-interpretation workflow is one I hope to extend to biomedical engineering problems involving biomechanics, devices, materials, and physiological systems.
